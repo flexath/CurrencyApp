@@ -15,7 +15,11 @@ data class CurrencyColorScheme(
     val colorRating: Color = Color.Unspecified,
     val colorIcon: Color = Color.Unspecified,
     val colorDivider: Color = Color.Unspecified,
-    val colorStroke: Color = Color.Unspecified
+    val colorStroke: Color = Color.Unspecified,
+    val colorSearchField: Color = Color.Unspecified,
+    val colorInputBoxStroke: Color = Color.Unspecified,
+    val colorHint: Color = Color.Unspecified,
+    val colorCardBackground: Color = Color.Unspecified
 )
 
 val CurrencyLightColorScheme = CurrencyColorScheme(
@@ -29,7 +33,11 @@ val CurrencyLightColorScheme = CurrencyColorScheme(
     colorRating = LightRating,
     colorIcon = LightIconColor,
     colorDivider = LightDivider,
-    colorStroke = LightStroke
+    colorStroke = LightStroke,
+    colorSearchField = LightSearchField,
+    colorInputBoxStroke = LightInputBoxStroke,
+    colorHint = LightHint,
+    colorCardBackground = LightCardBackground
 )
 
 val CurrencyDarkColorScheme = CurrencyColorScheme(
@@ -43,5 +51,9 @@ val CurrencyDarkColorScheme = CurrencyColorScheme(
     colorRating = DarkRating,
     colorIcon = DarkIconColor,
     colorDivider = DarkDivider,
-    colorStroke = DarkStroke
+    colorStroke = DarkStroke,
+    colorSearchField = DarkSearchField,
+    colorInputBoxStroke = DarkInputBoxStroke,
+    colorHint = DarkHint,
+    colorCardBackground = DarkCardBackground
 )

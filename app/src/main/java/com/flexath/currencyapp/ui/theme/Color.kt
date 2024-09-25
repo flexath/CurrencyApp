@@ -16,6 +16,10 @@ val LightIconColor = Color(0xFF9C9BA1)
 
 val LightDivider = Color(0xFFEBEBEB)
 val LightStroke = Color(0xFFB3B9B3)
+val LightSearchField = Color(0xFFF3F3FC)
+val LightInputBoxStroke = Color(0xFFE4DFDF)
+val LightHint = Color(0xFF747688)
+val LightCardBackground = Color(0xFFFFFFFF)
 
 // Dark Theme Colors
 val DarkPrimary = Color(0xFF894AFF)
@@ -31,3 +35,7 @@ val DarkIconColor = Color(0xFF8E938E)
 
 val DarkDivider = Color(0xFF2A2C2A)
 val DarkStroke = Color(0xFF393C39)
+val DarkSearchField = Color(0xFF393C39)
+val DarkInputBoxStroke = Color(0xFF393C39)
+val DarkHint = Color(0xFFB3B9B3)
+val DarkCardBackground = Color(0xFF19191A)
