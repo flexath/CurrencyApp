@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="580067ce-cb8e-4a3f-8cf2-5c3836ff1b4f" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_18" default="true" project-jdk-name="corretto-18" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
