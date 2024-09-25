@@ -12,3 +12,9 @@ object CurrencyApiConstants {
     const val QUERY_TO = "to"
     const val QUERY_AMOUNT = "amount"
 }
+
+object CurrencyDbConstants {
+    const val DB_NAME = "currency_db"
+}
+
+const val PAGING_PAGE_SIZE = 10

@@ -17,8 +17,8 @@ interface CurrencyApi {
     @GET("live")
     suspend fun getRealTimeRates(
         @Query(QUERY_ACCESS_KEY) accessKey: String = BuildConfig.API_KEY,
-        @Query(QUERY_CURRENCIES) currencies: String,
-        @Query(QUERY_SOURCE) source: String
+        @Query(QUERY_CURRENCIES) currencies: String? = null,
+        @Query(QUERY_SOURCE) source: String? = null
     ): RealTimeRateResponse
 
     @GET("list")

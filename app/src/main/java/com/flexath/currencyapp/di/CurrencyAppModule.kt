@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.flexath.currencyapp.data.local.db.CurrencyDb
 import com.flexath.currencyapp.data.remote.api.CurrencyApi
 import com.flexath.currencyapp.data.remote.api.CurrencyApiConstants.BASE_URL
+import com.flexath.currencyapp.data.remote.api.CurrencyDbConstants.DB_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,7 +60,7 @@ object CurrencyAppModule {
         INSTANCE ?: Room.databaseBuilder(
             context,
             CurrencyDb::class.java,
-            "currency_database"
+            DB_NAME
         ).fallbackToDestructiveMigration()
             .build().also {
                 INSTANCE = it
