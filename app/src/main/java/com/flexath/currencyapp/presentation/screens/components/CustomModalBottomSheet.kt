@@ -39,13 +39,6 @@ fun CustomModalBottomSheet(
                 )
             },
             tonalElevation = dimens.smallPadding2,
-            dragHandle = {
-                BottomSheetDefaults.DragHandle(
-                    width = 0.dp,
-                    height = 0.dp,
-                    modifier = Modifier.height(dimens.smallPadding4)
-                )
-            },
             containerColor = if(shapeMode == ShapeMode.SQUARED) {
                 MaterialTheme.colorScheme.background
             } else {

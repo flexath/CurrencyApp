@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.flexath.currencyapp.presentation.navigation.Screen
+import com.flexath.currencyapp.presentation.viewmodels.CurrencyViewModel
 import com.flexath.currencyapp.ui.theme.CurrencyColorScheme
 import com.flexath.currencyapp.ui.theme.CurrencyTypography
 import com.flexath.currencyapp.ui.theme.Dimensions
@@ -18,7 +19,8 @@ fun NavGraphBuilder.detailScreen(
     dimens: Dimensions,
     colorScheme: CurrencyColorScheme,
     typography: CurrencyTypography,
-    onNavigate: () -> Unit
+    onNavigate: () -> Unit,
+    currencyViewModel: CurrencyViewModel
 ) {
     composable<Screen.Detail> {
         DetailScreen(

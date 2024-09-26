@@ -1,5 +1,6 @@
 package com.flexath.currencyapp.domain.repository
 
+import android.util.Log
 import com.flexath.currencyapp.data.local.db.CurrencyDb
 import com.flexath.currencyapp.data.remote.api.CurrencyApi
 import com.flexath.currencyapp.data.remote.utils.SpecificApiErrorResponse
@@ -60,7 +61,8 @@ class CurrencyRepositoryImpl @Inject constructor(
     }
 
     override fun getSupportedCurrencies(): Flow<SpecificUiState<List<SupportedCurrencyVO>>> = flow {
-        emit(SpecificUiState.Loading())
+        val supportedCurrencyListFromLocal = currencyDb.currencyDao().getSupportedCurrencies()
+        emit(SpecificUiState.Loading(data = supportedCurrencyListFromLocal))
 
         try {
             val response = currencyApi.getSupportedCurrencies()
@@ -70,24 +72,31 @@ class CurrencyRepositoryImpl @Inject constructor(
                     value = value
                 )
             }
-            emit(SpecificUiState.Success(supportedCurrencyList))
+            if(!supportedCurrencyList.isNullOrEmpty()) {
+                currencyDb.currencyDao().insertSupportedCurrencies(supportedCurrencyList)
+            }
+            val currencyList = currencyDb.currencyDao().getSupportedCurrencies()
+            Log.i("CurrencyRepositoryImpl","SupportedCurrencyList: $supportedCurrencyList")
+            emit(SpecificUiState.Success(currencyList))
         } catch (e: HttpException) {
             val apiError = SpecificApiErrorResponse(e)
+            Log.i("CurrencyRepositoryImpl","HttpException: ${e.message}")
             emit(
                 SpecificUiState.Error(
                     errors = apiError.errors,
-                    data = listOf()
+                    data = supportedCurrencyListFromLocal
                 )
             )
         } catch (e: IOException) {
             val apiError = SpecificApiErrorResponse(e)
+            Log.i("CurrencyRepositoryImpl","IOException: ${e.message}")
             emit(
                 SpecificUiState.Error(
                     errors = SpecificErrorResponse(
                         message = "Couldn't reach server, check your internet connection.",
                         code = apiError.errors?.code
                     ),
-                    data = listOf()
+                    data = supportedCurrencyListFromLocal
                 )
             )
         }

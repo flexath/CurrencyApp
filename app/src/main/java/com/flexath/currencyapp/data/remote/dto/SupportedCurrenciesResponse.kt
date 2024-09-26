@@ -16,8 +16,8 @@ data class SupportedCurrenciesResponse(
     @SerializedName("privacy")
     val privacy: String?,
 
-    @SerializedName("quotes")
-    val currencies: Map<String, Double>?
+    @SerializedName("currencies")
+    val currencies: Map<String, String>?
 ) {
     fun toCurrencyEntity(): SupportedCurrencyEntity {
         return SupportedCurrencyEntity(
@@ -30,7 +30,7 @@ data class SupportedCurrenciesResponse(
 }
 
 // Extension function to convert Map<String, Double> to List<CurrencyEntity>
-fun Map<String, Double>.toSupportedCurrencyVOList(): List<SupportedCurrencyVO> {
+fun Map<String, String>.toSupportedCurrencyVOList(): List<SupportedCurrencyVO> {
     return this.map { (key, value) ->
         SupportedCurrencyVO(currencyCode = key, value = value)
     }

@@ -1,18 +1,13 @@
 package com.flexath.currencyapp.presentation.navigation
 
-import android.util.Log
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.flexath.currencyapp.presentation.screens.detailScreen
@@ -33,18 +28,6 @@ fun SetUpNavGraph(
 
     val currencyViewModel = hiltViewModel<CurrencyViewModel>()
 
-    LaunchedEffect(key1 = Unit) {
-        currencyViewModel.convertCurrency(
-            from = "USD",
-            to = "THB",
-            amount = 20.0
-        )
-    }
-
-    val realTimeRates = currencyViewModel.convertCurrency.collectAsStateWithLifecycle()
-
-    Log.i("RealTimeRates", realTimeRates.value.data.toString())
-
     Scaffold(
         modifier = modifier,
         containerColor = colorScheme.colorBackground,
@@ -63,6 +46,7 @@ fun SetUpNavGraph(
                 dimens = dimens,
                 colorScheme = colorScheme,
                 typography = typography,
+                currencyViewModel = currencyViewModel,
                 onNavigate = {
                     navController.navigate(Screen.Detail)
                 }
@@ -73,6 +57,7 @@ fun SetUpNavGraph(
                 dimens = dimens,
                 colorScheme = colorScheme,
                 typography = typography,
+                currencyViewModel = currencyViewModel,
                 onNavigate = {
                     navController.navigateUp()
                 }

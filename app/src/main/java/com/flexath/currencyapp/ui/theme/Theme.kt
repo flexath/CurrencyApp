@@ -46,7 +46,7 @@ fun CurrencyAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
-    activity: Activity = LocalContext.current as MainActivity,
+//    activity: Activity = LocalContext.current as MainActivity,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -62,29 +62,35 @@ fun CurrencyAppTheme(
     val burmaConnectColorScheme =
         if (darkTheme) CurrencyDarkColorScheme else CurrencyLightColorScheme
 
-    val windowSize = calculateWindowSizeClass(activity = activity)
+//    val windowSize = calculateWindowSizeClass(activity = activity)
     val config = LocalConfiguration.current
 
-    var appDimens = mediumCompatDimensions
+//    var appDimens = mediumCompatDimensions
     var typography = getMediumTypography()
 
-    when (windowSize.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> {
-            if (config.screenWidthDp <= 360) {
-                Log.i("Dimens", "Compact: ${config.screenWidthDp}")
-                appDimens = smallCompatDimensions
-                typography = getSmallCompatTypography()
-            } else if (config.screenWidthDp < 599) {
-                Log.i("Dimens", "Compact Medium: ${config.screenWidthDp}")
-                appDimens = mediumCompatDimensions
-                typography = getMediumTypography()
-            } else {
-                Log.i("Dimens", "Compact Large: ${config.screenWidthDp}")
-                appDimens = largeCompatDimensions
-                typography = getLargeCompatTypography()
-            }
-        }
+    val appDimens = when {
+        config.screenWidthDp <= 360 -> smallCompatDimensions
+        config.screenWidthDp < 600 -> mediumCompatDimensions
+        else -> largeCompatDimensions
     }
+
+//    when (windowSize.widthSizeClass) {
+//        WindowWidthSizeClass.Compact -> {
+//            if (config.screenWidthDp <= 360) {
+//                Log.i("Dimens", "Compact: ${config.screenWidthDp}")
+//                appDimens = smallCompatDimensions
+//                typography = getSmallCompatTypography()
+//            } else if (config.screenWidthDp < 599) {
+//                Log.i("Dimens", "Compact Medium: ${config.screenWidthDp}")
+//                appDimens = mediumCompatDimensions
+//                typography = getMediumTypography()
+//            } else {
+//                Log.i("Dimens", "Compact Large: ${config.screenWidthDp}")
+//                appDimens = largeCompatDimensions
+//                typography = getLargeCompatTypography()
+//            }
+//        }
+//    }
 
 //        WindowWidthSizeClass.Medium -> {
 //            appDimens = MediumDimens

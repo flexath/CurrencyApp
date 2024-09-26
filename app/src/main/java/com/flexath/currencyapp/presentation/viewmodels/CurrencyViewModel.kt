@@ -2,6 +2,7 @@ package com.flexath.currencyapp.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.facebook.gamingservices.cloudgaming.CloudGameLoginHandler.init
 import com.flexath.currencyapp.data.remote.utils.SpecificUiState
 import com.flexath.currencyapp.domain.model.CurrencyConverterVO
 import com.flexath.currencyapp.domain.model.CurrencyVO
@@ -11,12 +12,9 @@ import com.flexath.currencyapp.presentation.states.ViewModelUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,19 +30,25 @@ class CurrencyViewModel @Inject constructor(
 
     // For Supported Currencies
     private var _supportedCurrencies = MutableStateFlow(ViewModelUiState<List<SupportedCurrencyVO>>())
-    val supportedCurrencies get() = _supportedCurrencies
-        .onStart {
-            getSupportedCurrencies()
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = ViewModelUiState()
-        )
+    val supportedCurrencies get() = _supportedCurrencies.asStateFlow()
 
     // For Convert Currency
     private var _convertCurrency = MutableStateFlow(ViewModelUiState<CurrencyConverterVO>())
     val convertCurrency get() = _convertCurrency.asStateFlow()
+
+    private var _isCallRealTimeRates = MutableStateFlow(false)
+    val isCallRealTimeRates get() = _isCallRealTimeRates.asStateFlow()
+
+    init {
+        getSupportedCurrencies()
+        getRealTimeRates()
+    }
+
+    fun updateIsCallRealTimeRates(isCalled: Boolean) {
+        _isCallRealTimeRates.update {
+            isCalled
+        }
+    }
 
     fun getRealTimeRates(
         currencies: String? = null,
@@ -86,15 +90,54 @@ class CurrencyViewModel @Inject constructor(
                                     errorMessage = null
                                 )
                             }
+
+                            _isCallRealTimeRates.update {
+                                true
+                            }
                         }
                     }
                 }
         }
     }
 
-    private fun getSupportedCurrencies() {
+    fun getSupportedCurrencies() {
         viewModelScope.launch {
             currencyUseCases.getSupportedCurrenciesUseCase()
+                .flowOn(Dispatchers.IO)
+                .collectLatest { uiState ->
+                    when(uiState) {
+                        is SpecificUiState.Error -> {
+                            _supportedCurrencies.update {
+                                it.copy(
+                                    data = uiState.data,
+                                    isLoading = false,
+                                    isError = true,
+                                    errorMessage = uiState.errors?.message
+                                )
+                            }
+                        }
+                        is SpecificUiState.Loading -> {
+                            _supportedCurrencies.update {
+                                it.copy(
+                                    data = uiState.data,
+                                    isLoading = true,
+                                    isError = false,
+                                    errorMessage = null
+                                )
+                            }
+                        }
+                        is SpecificUiState.Success -> {
+                            _supportedCurrencies.update {
+                                it.copy(
+                                    data = uiState.data,
+                                    isLoading = false,
+                                    isError = false,
+                                    errorMessage = null
+                                )
+                            }
+                        }
+                    }
+                }
         }
     }
 
