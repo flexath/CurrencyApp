@@ -1,6 +1,5 @@
 package com.flexath.currencyapp.presentation.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,10 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +45,7 @@ import com.flexath.currencyapp.presentation.constants.popularCurrencyList
 import com.flexath.currencyapp.presentation.navigation.Screen
 import com.flexath.currencyapp.presentation.screens.components.AppSearchField
 import com.flexath.currencyapp.presentation.screens.components.CustomFilledButton
+import com.flexath.currencyapp.presentation.screens.components.EditableCustomOutlinedTextField
 import com.flexath.currencyapp.presentation.screens.components.SearchBasicTextField
 import com.flexath.currencyapp.presentation.screens.components.SearchFilterBottomSheet
 import com.flexath.currencyapp.presentation.screens.components.realTimeRateCardList
@@ -74,19 +74,14 @@ fun NavGraphBuilder.homeScreen(
             mutableStateOf(popularCurrencyList[0])
         }
 
-        var currentFromSelectedType by rememberSaveable {
-            mutableStateOf("")
-        }
-
-        var currentToSelectedType by rememberSaveable {
-            mutableStateOf("")
-        }
+        val currentFromState = currencyViewModel.currencyFromStateFlow.collectAsStateWithLifecycle()
+        val currentToState = currencyViewModel.currencyToStateflow.collectAsStateWithLifecycle()
+        val amountState = currencyViewModel.amountStateflow.collectAsStateWithLifecycle()
+        val isCallRealTimeRates = currencyViewModel.isCallRealTimeRates.collectAsStateWithLifecycle()
 
         var isFirstLaunch by rememberSaveable {
             mutableStateOf(false)
         }
-
-        val isCallRealTimeRates = currencyViewModel.isCallRealTimeRates.collectAsStateWithLifecycle()
 
         LaunchedEffect(key1 = selectedPopularCurrency) {
             if(!isCallRealTimeRates.value) {
@@ -110,8 +105,9 @@ fun NavGraphBuilder.homeScreen(
             colorScheme = colorScheme,
             typography = typography,
             realTimeRatesState = realTimeRatesState,
-            currentFromSelectedType = currentFromSelectedType,
-            currentToSelectedType = currentToSelectedType,
+            amount = amountState.value,
+            currentFromSelectedType = currentFromState.value,
+            currentToSelectedType = currentToState.value,
             supportedCurrenciesState = supportedCurrenciesState,
             onClickCurrencyTextField = {
                 // that api call is not that necessary , cause I want to show loading and error states ( hee )
@@ -122,17 +118,17 @@ fun NavGraphBuilder.homeScreen(
                 selectedPopularCurrency = it
             },
             onSelectCurrencyFrom = {
-                currentFromSelectedType = it
+                currencyViewModel.updateCurrencyFrom(it)
             },
             onSelectCurrencyTo = {
-                currentToSelectedType = it
+                currencyViewModel.updateCurrencyTo(it)
             },
             onNavigate = {
                 navController.navigate(
                     Screen.Detail(
                         currencyArg = CurrencyConvertArg(
-                            fromCurrency = currentFromSelectedType,
-                            toCurrency = currentToSelectedType,
+                            fromCurrency = currentFromState.value,
+                            toCurrency = currentToState.value,
                             amount = ""
                         )
                     )
@@ -151,10 +147,12 @@ fun HomeScreen(
     typography: CurrencyTypography,
     realTimeRatesState: ViewModelUiState<List<CurrencyVO>>,
     supportedCurrenciesState: ViewModelUiState<List<SupportedCurrencyVO>>,
+    amount: String = "",
     currentFromSelectedType: String = "",
     currentToSelectedType: String = "",
     onClickCurrencyTextField: () -> Unit = {},
     onSelectedPopularCurrency: (String) -> Unit = {},
+    onQueryChange: (String) -> Unit = {},
     onSelectCurrencyFrom: (String) -> Unit = {},
     onSelectCurrencyTo: (String) -> Unit = {},
     onNavigate: () -> Unit = {},
@@ -221,12 +219,24 @@ fun HomeScreen(
         item {
             Spacer(modifier = Modifier.height(dimens.largePadding10))
 
-            SearchBasicTextField(
+//            SearchBasicTextField(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = dimens.mediumPadding3),
+//                textFieldState = textFieldsState,
+//                hint = stringResource(R.string.lbl_enter_currency)
+//            )
+
+            EditableCustomOutlinedTextField(
+                query = amount,
+                onQueryChange = {
+                    onQueryChange(it)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimens.mediumPadding3),
-                textFieldState = textFieldsState,
-                hint = stringResource(R.string.lbl_enter_currency)
+                hint = stringResource(R.string.lbl_enter_currency),
+                dimens = dimens
             )
 
             Row(
@@ -394,8 +404,9 @@ private fun HomeScreenPreview() {
             dimens = MaterialTheme.currencyDimens,
             colorScheme = MaterialTheme.currencyColorScheme,
             typography = MaterialTheme.currencyTypography,
+            realTimeRatesState = ViewModelUiState(),
             supportedCurrenciesState = ViewModelUiState(),
-            realTimeRatesState = ViewModelUiState()
+            amount = ""
         )
     }
 }

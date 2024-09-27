@@ -37,6 +37,15 @@ class CurrencyViewModel @Inject constructor(
     private var _convertCurrency = MutableStateFlow(ViewModelUiState<CurrencyConverterVO>())
     val convertCurrency get() = _convertCurrency.asStateFlow()
 
+    private var _currencyFromStateflow =  MutableStateFlow("")
+    val currencyFromStateFlow = _currencyFromStateflow.asStateFlow()
+
+    private var _currencyToStateflow =  MutableStateFlow("")
+    val currencyToStateflow = _currencyToStateflow.asStateFlow()
+
+    private var _amountStateflow =  MutableStateFlow("")
+    val amountStateflow = _amountStateflow.asStateFlow()
+
     private var _isCallRealTimeRates = MutableStateFlow(false)
     val isCallRealTimeRates get() = _isCallRealTimeRates.asStateFlow()
 
@@ -48,6 +57,24 @@ class CurrencyViewModel @Inject constructor(
     fun updateIsCallRealTimeRates(isCalled: Boolean) {
         _isCallRealTimeRates.update {
             isCalled
+        }
+    }
+
+    fun updateCurrencyFrom(currencyFrom: String) {
+        _currencyFromStateflow.update {
+            currencyFrom
+        }
+    }
+
+    fun updateCurrencyTo(currencyTo: String) {
+        _currencyToStateflow.update {
+            currencyTo
+        }
+    }
+
+    fun updateAmount(amount: String) {
+        _amountStateflow.update {
+            amount
         }
     }
 
