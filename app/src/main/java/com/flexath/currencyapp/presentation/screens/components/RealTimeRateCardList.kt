@@ -33,10 +33,10 @@ fun LazyListScope.realTimeRateCardList(
     dimens: Dimensions,
     colorScheme: CurrencyColorScheme,
     typography: CurrencyTypography,
-    currencyList: List<CurrencyVO>
+    currencyList: List<CurrencyVO>?
 ) {
-    items(count = currencyList.size) {index ->
-        val currency = currencyList[index]
+    items(count = currencyList?.size ?: 0) {index ->
+        val currency = currencyList?.get(index)
 
         Spacer(modifier = Modifier.height(dimens.smallPadding4))
 
@@ -58,7 +58,7 @@ fun RealTimeRateCard(
     dimens: Dimensions,
     colorScheme: CurrencyColorScheme,
     typography: CurrencyTypography,
-    currency: CurrencyVO
+    currency: CurrencyVO?
 ) {
     Row(
         modifier = modifier.clickable {
@@ -75,7 +75,7 @@ fun RealTimeRateCard(
         Spacer(modifier = Modifier.width(dimens.mediumPadding3))
 
         Text(
-            text = currency.currencyCode,
+            text = currency?.currencyCode.orEmpty(),
             style = typography.bodyMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),
@@ -86,7 +86,7 @@ fun RealTimeRateCard(
         Spacer(modifier = Modifier.width(dimens.mediumPadding3))
 
         Text(
-            text = currency.value.toString(),
+            text = currency?.value.toString(),
             style = typography.labelMedium.copy(
                 fontWeight = FontWeight.SemiBold
             ),

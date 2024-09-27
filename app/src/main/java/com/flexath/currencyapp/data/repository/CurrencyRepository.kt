@@ -18,6 +18,6 @@ interface CurrencyRepository {
     fun convertCurrency(
         from: String,
         to: String,
-        amount: Double
+        amount: String
     ): Flow<SpecificUiState<CurrencyConverterVO>>
 }

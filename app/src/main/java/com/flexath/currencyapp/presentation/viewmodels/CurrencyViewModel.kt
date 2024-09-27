@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -40,8 +41,8 @@ class CurrencyViewModel @Inject constructor(
     val isCallRealTimeRates get() = _isCallRealTimeRates.asStateFlow()
 
     init {
+        //getRealTimeRates()          // I want to call that api because its default currency is USD which my app needs on first launch
         getSupportedCurrencies()
-        getRealTimeRates()
     }
 
     fun updateIsCallRealTimeRates(isCalled: Boolean) {
@@ -59,6 +60,7 @@ class CurrencyViewModel @Inject constructor(
                 currencies = currencies,
                 source = source
             ).flowOn(Dispatchers.IO)
+                .distinctUntilChanged()
                 .collectLatest { uiState ->
                     when(uiState) {
                         is SpecificUiState.Error -> {
@@ -90,10 +92,7 @@ class CurrencyViewModel @Inject constructor(
                                     errorMessage = null
                                 )
                             }
-
-                            _isCallRealTimeRates.update {
-                                true
-                            }
+                            updateIsCallRealTimeRates(true)
                         }
                     }
                 }
@@ -144,7 +143,7 @@ class CurrencyViewModel @Inject constructor(
     fun convertCurrency(
         from: String,
         to: String,
-        amount: Double
+        amount: String
     ) {
         viewModelScope.launch {
             currencyUseCases.convertCurrencyUseCase(

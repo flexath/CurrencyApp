@@ -1,5 +1,6 @@
 package com.flexath.currencyapp.presentation.navigation
 
+import com.flexath.currencyapp.presentation.constants.CurrencyConvertArg
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
@@ -9,5 +10,7 @@ sealed class Screen {
     data object Home: Screen()
 
     @Serializable
-    data object Detail: Screen()
+    data class Detail(
+        val currencyArg: CurrencyConvertArg
+    ): Screen()
 }

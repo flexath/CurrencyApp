@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,15 +39,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.flexath.currencyapp.R
 import com.flexath.currencyapp.ui.theme.CurrencyAppTheme
 import com.flexath.currencyapp.ui.theme.CurrencyColorScheme
 import com.flexath.currencyapp.ui.theme.CustomFont
+import com.flexath.currencyapp.ui.theme.Dimensions
 import com.flexath.currencyapp.ui.theme.currencyColorScheme
 import com.flexath.currencyapp.ui.theme.currencyDimens
 import com.flexath.currencyapp.ui.theme.currencyTypography
@@ -304,6 +309,59 @@ fun SearchBasicTextField(
             }
         }
     }
+}
+
+@Composable
+fun EditableCustomOutlinedTextField(
+    modifier: Modifier = Modifier,
+    dimens: Dimensions,
+    query: String,
+    onQueryChange: (String) -> Unit,
+    hint: String,
+    singleLine: Boolean = true,
+    maxLines: Int = 1,
+    minLines: Int = 1,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Text,
+        imeAction = ImeAction.Done
+    ),
+) {
+    TextField(
+        modifier = modifier
+            .clip(RoundedCornerShape(dimens.mediumPadding1))
+            .border(
+                width = dimens.smallPadding0,
+                color = MaterialTheme.currencyColorScheme.colorStroke,
+                shape = RoundedCornerShape(dimens.mediumPadding1)
+            ).height(IntrinsicSize.Max),
+        value = query,
+        onValueChange = onQueryChange,
+        minLines = minLines,
+        maxLines = maxLines,
+        singleLine = singleLine,
+        placeholder = {
+            Text(
+                text = hint,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.currencyColorScheme.colorHint,
+                maxLines = maxLines,
+                overflow = TextOverflow.Visible,
+                modifier = Modifier
+            )
+        },
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            fontWeight = FontWeight.Medium,
+        ),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            unfocusedContainerColor = MaterialTheme.currencyColorScheme.colorBackground,
+            focusedContainerColor = MaterialTheme.currencyColorScheme.colorBackground,
+            disabledContainerColor = MaterialTheme.currencyColorScheme.colorBackground
+        ),
+        keyboardOptions = keyboardOptions
+    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)

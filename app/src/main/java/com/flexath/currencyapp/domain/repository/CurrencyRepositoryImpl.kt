@@ -105,7 +105,7 @@ class CurrencyRepositoryImpl @Inject constructor(
     override fun convertCurrency(
         from: String,
         to: String,
-        amount: Double
+        amount: String
     ): Flow<SpecificUiState<CurrencyConverterVO>> = flow {
         emit(SpecificUiState.Loading())
 

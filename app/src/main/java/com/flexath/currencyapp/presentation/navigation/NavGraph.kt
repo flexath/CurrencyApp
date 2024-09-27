@@ -47,9 +47,7 @@ fun SetUpNavGraph(
                 colorScheme = colorScheme,
                 typography = typography,
                 currencyViewModel = currencyViewModel,
-                onNavigate = {
-                    navController.navigate(Screen.Detail)
-                }
+                navController = navController
             )
 
             detailScreen(

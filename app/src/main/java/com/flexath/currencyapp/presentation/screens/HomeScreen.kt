@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,10 +36,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.flexath.currencyapp.R
 import com.flexath.currencyapp.domain.model.CurrencyVO
 import com.flexath.currencyapp.domain.model.SupportedCurrencyVO
+import com.flexath.currencyapp.presentation.constants.CurrencyConvertArg
+import com.flexath.currencyapp.presentation.constants.popularCurrencyList
 import com.flexath.currencyapp.presentation.navigation.Screen
 import com.flexath.currencyapp.presentation.screens.components.AppSearchField
 import com.flexath.currencyapp.presentation.screens.components.CustomFilledButton
@@ -54,22 +58,46 @@ import com.flexath.currencyapp.ui.theme.Dimensions
 import com.flexath.currencyapp.ui.theme.currencyColorScheme
 import com.flexath.currencyapp.ui.theme.currencyDimens
 import com.flexath.currencyapp.ui.theme.currencyTypography
+import kotlinx.coroutines.delay
 
 fun NavGraphBuilder.homeScreen(
     modifier: Modifier = Modifier,
     dimens: Dimensions,
     colorScheme: CurrencyColorScheme,
     typography: CurrencyTypography,
-    onNavigate: () -> Unit,
+    navController: NavHostController,
     currencyViewModel: CurrencyViewModel
 ) {
     composable<Screen.Home> {
 
+        var selectedPopularCurrency by rememberSaveable {
+            mutableStateOf(popularCurrencyList[0])
+        }
+
+        var currentFromSelectedType by rememberSaveable {
+            mutableStateOf("")
+        }
+
+        var currentToSelectedType by rememberSaveable {
+            mutableStateOf("")
+        }
+
+        var isFirstLaunch by rememberSaveable {
+            mutableStateOf(false)
+        }
+
         val isCallRealTimeRates = currencyViewModel.isCallRealTimeRates.collectAsStateWithLifecycle()
 
-        LaunchedEffect(key1 = isCallRealTimeRates.value) {
+        LaunchedEffect(key1 = selectedPopularCurrency) {
             if(!isCallRealTimeRates.value) {
-//                currencyViewModel.getRealTimeRates()
+                if(!isFirstLaunch) {
+                    delay(1000)
+                }
+                currencyViewModel.getRealTimeRates(
+                    source = selectedPopularCurrency
+                )
+                isFirstLaunch = true
+                currencyViewModel.updateIsCallRealTimeRates(true)
             }
         }
 
@@ -82,12 +110,34 @@ fun NavGraphBuilder.homeScreen(
             colorScheme = colorScheme,
             typography = typography,
             realTimeRatesState = realTimeRatesState,
+            currentFromSelectedType = currentFromSelectedType,
+            currentToSelectedType = currentToSelectedType,
             supportedCurrenciesState = supportedCurrenciesState,
             onClickCurrencyTextField = {
                 // that api call is not that necessary , cause I want to show loading and error states ( hee )
                 currencyViewModel.getSupportedCurrencies()
             },
-            onNavigate = onNavigate
+            onSelectedPopularCurrency = {
+                currencyViewModel.updateIsCallRealTimeRates(false)
+                selectedPopularCurrency = it
+            },
+            onSelectCurrencyFrom = {
+                currentFromSelectedType = it
+            },
+            onSelectCurrencyTo = {
+                currentToSelectedType = it
+            },
+            onNavigate = {
+                navController.navigate(
+                    Screen.Detail(
+                        currencyArg = CurrencyConvertArg(
+                            fromCurrency = currentFromSelectedType,
+                            toCurrency = currentToSelectedType,
+                            amount = ""
+                        )
+                    )
+                )
+            }
         )
     }
 }
@@ -101,7 +151,12 @@ fun HomeScreen(
     typography: CurrencyTypography,
     realTimeRatesState: ViewModelUiState<List<CurrencyVO>>,
     supportedCurrenciesState: ViewModelUiState<List<SupportedCurrencyVO>>,
+    currentFromSelectedType: String = "",
+    currentToSelectedType: String = "",
     onClickCurrencyTextField: () -> Unit = {},
+    onSelectedPopularCurrency: (String) -> Unit = {},
+    onSelectCurrencyFrom: (String) -> Unit = {},
+    onSelectCurrencyTo: (String) -> Unit = {},
     onNavigate: () -> Unit = {},
 ) {
     val currencyFromBottomSheetState = rememberModalBottomSheetState(
@@ -112,20 +167,14 @@ fun HomeScreen(
         skipPartiallyExpanded = true
     )
 
+    val textFieldsState = rememberTextFieldState()
+
     var currencyFromExpanded by rememberSaveable {
         mutableStateOf(false)
     }
 
     var currencyToExpanded by rememberSaveable {
         mutableStateOf(false)
-    }
-
-    var currentFromSelectedType by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    var currentToSelectedType by rememberSaveable {
-        mutableStateOf("")
     }
 
     var currentSelectedChipIndex by rememberSaveable {
@@ -145,7 +194,7 @@ fun HomeScreen(
             currencyFromExpanded = it
         },
         onSelected = {
-            currentFromSelectedType = it
+            onSelectCurrencyFrom(it)
         }
     )
 
@@ -162,7 +211,7 @@ fun HomeScreen(
             currencyToExpanded = it
         },
         onSelected = {
-            currentToSelectedType = it
+            onSelectCurrencyTo(it)
         }
     )
 
@@ -176,7 +225,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimens.mediumPadding3),
-                textFieldState = rememberTextFieldState(),
+                textFieldState = textFieldsState,
                 hint = stringResource(R.string.lbl_enter_currency)
             )
 
@@ -197,7 +246,7 @@ fun HomeScreen(
                     iconTint = MaterialTheme.colorScheme.primary,
                     trailingIcon = {
                         Icon(
-                            painter = if(currencyFromExpanded) {
+                            painter = if (currencyFromExpanded) {
                                 painterResource(id = R.drawable.ic_chevron_up)
                             } else {
                                 painterResource(id = R.drawable.ic_chevron_down_20dp)
@@ -235,7 +284,7 @@ fun HomeScreen(
                     iconTint = MaterialTheme.colorScheme.primary,
                     trailingIcon = {
                         Icon(
-                            painter = if(currencyToExpanded) {
+                            painter = if (currencyToExpanded) {
                                 painterResource(id = R.drawable.ic_chevron_up)
                             } else {
                                 painterResource(id = R.drawable.ic_chevron_down_20dp)
@@ -270,33 +319,32 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(dimens.mediumPadding5))
 
             LazyRow {
-                items(count = minOf(supportedCurrenciesState.data?.size ?: 0, 10)) {index ->
-                    val currency = supportedCurrenciesState.data?.get(index)
+                items(count = minOf(popularCurrencyList.size, 10)) { index ->
+                    val currency = popularCurrencyList[index]
 
-                    if(index == 0) {
+                    if (index == 0) {
                         Spacer(modifier = Modifier.width(dimens.mediumPadding3))
                     } else {
                         Spacer(modifier = Modifier.width(dimens.smallPadding2))
                     }
 
-                    currency?.let {
-                        FilterChip(
-                            selected = currentSelectedChipIndex == index,
-                            shape = RoundedCornerShape(dimens.smallPadding4),
-                            label = {
-                                Text(
-                                    text = currency.currencyCode,
-                                    style = typography.labelMedium,
-                                    color = colorScheme.colorPrimary
-                                )
-                            },
-                            onClick = {
-                                currentSelectedChipIndex = index
-                            }
-                        )
-                    }
+                    FilterChip(
+                        selected = currentSelectedChipIndex == index,
+                        shape = RoundedCornerShape(dimens.smallPadding4),
+                        label = {
+                            Text(
+                                text = currency,
+                                style = typography.labelMedium,
+                                color = colorScheme.colorPrimary
+                            )
+                        },
+                        onClick = {
+                            currentSelectedChipIndex = index
+                            onSelectedPopularCurrency(currency)
+                        }
+                    )
 
-                    if(index == 9) {
+                    if (index == 9) {
                         Spacer(modifier = Modifier.width(dimens.mediumPadding3))
                     } else {
                         Spacer(modifier = Modifier.width(dimens.smallPadding2))
@@ -306,14 +354,14 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(dimens.smallPadding4))
 
-            if(realTimeRatesState.isLoading) {
+            if (realTimeRatesState.isLoading) {
                 Spacer(modifier = Modifier.height(dimens.largePadding5))
 
                 CircularProgressIndicator(
                     color = colorScheme.colorPrimary,
                     strokeWidth = dimens.smallPadding1
                 )
-            } else if(realTimeRatesState.isError) {
+            } else if (realTimeRatesState.isError) {
 
                 Spacer(modifier = Modifier.height(dimens.largePadding5))
 
@@ -326,11 +374,13 @@ fun HomeScreen(
         }
 
         realTimeRateCardList(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = dimens.mediumPadding3),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimens.mediumPadding3),
             dimens = dimens,
             colorScheme = colorScheme,
             typography = typography,
-            currencyList = realTimeRatesState.data.orEmpty()
+            currencyList = realTimeRatesState.data
         )
     }
 }

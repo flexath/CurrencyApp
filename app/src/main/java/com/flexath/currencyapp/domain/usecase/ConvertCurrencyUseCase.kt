@@ -9,7 +9,7 @@ class ConvertCurrencyUseCase @Inject constructor(
     operator fun invoke(
         from: String,
         to: String,
-        amount: Double
+        amount: String
     ) = currencyRepository.convertCurrency(
         from = from,
         to = to,

@@ -31,6 +31,6 @@ interface CurrencyApi {
         @Query(QUERY_ACCESS_KEY) accessKey: String = BuildConfig.API_KEY,
         @Query(QUERY_FROM) from: String,
         @Query(QUERY_TO) to: String,
-        @Query(QUERY_AMOUNT) amount: Double
+        @Query(QUERY_AMOUNT) amount: String
     ): CurrencyConvertResponse
 }
