@@ -207,4 +207,7 @@ dependencies {
 
     // window sizes
     implementation(libs.androidx.material3.window)
+
+    // lottie animation
+    implementation(libs.lottie.compose)
 }

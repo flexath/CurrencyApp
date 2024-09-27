@@ -93,7 +93,7 @@ class CurrencyViewModel @Inject constructor(
                         is SpecificUiState.Error -> {
                             _realTimeRates.update {
                                 it.copy(
-                                    data = null,
+                                    data = uiState.data,
                                     isLoading = false,
                                     isError = true,
                                     errorMessage = uiState.errors?.message
@@ -103,7 +103,7 @@ class CurrencyViewModel @Inject constructor(
                         is SpecificUiState.Loading -> {
                             _realTimeRates.update {
                                 it.copy(
-                                    data = null,
+                                    data = uiState.data,
                                     isLoading = true,
                                     isError = false,
                                     errorMessage = null

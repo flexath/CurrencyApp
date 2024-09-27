@@ -1,6 +1,8 @@
 package com.flexath.currencyapp.domain.repository
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.flexath.currencyapp.data.local.db.CurrencyDb
 import com.flexath.currencyapp.data.remote.api.CurrencyApi
 import com.flexath.currencyapp.data.remote.utils.SpecificApiErrorResponse
@@ -14,12 +16,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class CurrencyRepositoryImpl @Inject constructor(
     private val currencyApi: CurrencyApi,
     private val currencyDb: CurrencyDb
 ) : CurrencyRepository {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun getRealTimeRates(
         currencies: String?,
         source: String?
@@ -31,10 +37,16 @@ class CurrencyRepositoryImpl @Inject constructor(
                 currencies = currencies,
                 source = source
             )
+
+            val instant = Instant.ofEpochSecond(response.timestamp ?: 0L)
+            val timeStamp = DateTimeFormatter.ofPattern("HH:mm:ss")
+                .withZone(ZoneId.systemDefault()).format(instant)
+
             val currencyList = response.quotes?.map { (key, value) ->
                 CurrencyVO(
                     currencyCode = key.substring(3),
-                    value = value
+                    value = value,
+                    timeStamp = timeStamp
                 )
             }
             emit(SpecificUiState.Success(currencyList))

@@ -1,6 +1,5 @@
 package com.flexath.currencyapp.presentation.screens.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.flexath.currencyapp.R
 import com.flexath.currencyapp.domain.model.CurrencyVO
@@ -61,10 +61,8 @@ fun RealTimeRateCard(
     currency: CurrencyVO?
 ) {
     Row(
-        modifier = modifier.clickable {
-
-        },
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier.clickable {},
+        verticalAlignment = Alignment.Top
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_location),
@@ -74,24 +72,42 @@ fun RealTimeRateCard(
 
         Spacer(modifier = Modifier.width(dimens.mediumPadding3))
 
-        Text(
-            text = currency?.currencyCode.orEmpty(),
-            style = typography.bodyMedium.copy(
-                fontWeight = FontWeight.SemiBold
-            ),
-            color = colorScheme.colorTitleText,
+        Column(
             modifier = Modifier.weight(1f)
-        )
+        ) {
+            Row {
+                Text(
+                    text = currency?.currencyCode.orEmpty(),
+                    style = typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = colorScheme.colorTitleText,
+                    modifier = Modifier.weight(1f)
+                )
 
-        Spacer(modifier = Modifier.width(dimens.mediumPadding3))
+                Spacer(modifier = Modifier.width(dimens.smallPadding4))
 
-        Text(
-            text = currency?.value.toString(),
-            style = typography.labelMedium.copy(
-                fontWeight = FontWeight.SemiBold
-            ),
-            color = colorScheme.colorTitleText,
-        )
+                Text(
+                    text = currency?.value.toString(),
+                    style = typography.bodySmall.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = colorScheme.colorTitleText,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(dimens.smallPadding4))
+
+            Text(
+                text = currency?.timeStamp.toString(),
+                style = typography.labelSmall.copy(
+                    fontWeight = FontWeight.Normal
+                ),
+                color = colorScheme.colorHint,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -105,7 +121,8 @@ private fun RealTimeRateCardPreview() {
         typography = MaterialTheme.currencyTypography,
         currency = CurrencyVO(
             currencyCode = "USD",
-            value = 0.3563
+            value = 0.3563,
+            timeStamp = "March"
         )
     )
 }

@@ -28,9 +28,9 @@ object CurrencyAppModule {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         return OkHttpClient.Builder()
-            .connectTimeout(3, TimeUnit.MINUTES)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .writeTimeout(3, TimeUnit.MINUTES)
+            .connectTimeout(45, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
             .build()
     }

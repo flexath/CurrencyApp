@@ -46,9 +46,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.flexath.currencyapp.R
 import com.flexath.currencyapp.ui.theme.CurrencyAppTheme
-import com.flexath.currencyapp.ui.theme.CurrencyColorScheme
 import com.flexath.currencyapp.ui.theme.CustomFont
 import com.flexath.currencyapp.ui.theme.Dimensions
 import com.flexath.currencyapp.ui.theme.currencyColorScheme
@@ -322,7 +320,7 @@ fun EditableCustomOutlinedTextField(
     maxLines: Int = 1,
     minLines: Int = 1,
     keyboardOptions: KeyboardOptions = KeyboardOptions(
-        keyboardType = KeyboardType.Text,
+        keyboardType = KeyboardType.Number,
         imeAction = ImeAction.Done
     ),
 ) {

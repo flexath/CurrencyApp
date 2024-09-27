@@ -1,6 +1,8 @@
 package com.flexath.currencyapp.presentation.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,9 +43,9 @@ import com.flexath.currencyapp.presentation.constants.CurrencyConvertArg
 import com.flexath.currencyapp.presentation.constants.popularCurrencyList
 import com.flexath.currencyapp.presentation.navigation.Screen
 import com.flexath.currencyapp.presentation.screens.components.AppSearchField
+import com.flexath.currencyapp.presentation.screens.components.CurrencyCardShimmerEffect
 import com.flexath.currencyapp.presentation.screens.components.CustomFilledButton
 import com.flexath.currencyapp.presentation.screens.components.EditableCustomOutlinedTextField
-import com.flexath.currencyapp.presentation.screens.components.SearchBasicTextField
 import com.flexath.currencyapp.presentation.screens.components.SearchFilterBottomSheet
 import com.flexath.currencyapp.presentation.screens.components.realTimeRateCardList
 import com.flexath.currencyapp.presentation.states.ViewModelUiState
@@ -74,6 +73,10 @@ fun NavGraphBuilder.homeScreen(
             mutableStateOf(popularCurrencyList[0])
         }
 
+        var currentSelectedChipIndex by rememberSaveable {
+            mutableIntStateOf(0)
+        }
+
         val currentFromState = currencyViewModel.currencyFromStateFlow.collectAsStateWithLifecycle()
         val currentToState = currencyViewModel.currencyToStateflow.collectAsStateWithLifecycle()
         val amountState = currencyViewModel.amountStateflow.collectAsStateWithLifecycle()
@@ -86,12 +89,12 @@ fun NavGraphBuilder.homeScreen(
         LaunchedEffect(key1 = selectedPopularCurrency) {
             if(!isCallRealTimeRates.value) {
                 if(!isFirstLaunch) {
-                    delay(1000)
+                    delay(2000)
                 }
+                isFirstLaunch = true
                 currencyViewModel.getRealTimeRates(
                     source = selectedPopularCurrency
                 )
-                isFirstLaunch = true
                 currencyViewModel.updateIsCallRealTimeRates(true)
             }
         }
@@ -109,6 +112,10 @@ fun NavGraphBuilder.homeScreen(
             currentFromSelectedType = currentFromState.value,
             currentToSelectedType = currentToState.value,
             supportedCurrenciesState = supportedCurrenciesState,
+            currentSelectedChipIndex = currentSelectedChipIndex,
+            onSelectedChipIndex = {
+                currentSelectedChipIndex = it
+            },
             onClickCurrencyTextField = {
                 // that api call is not that necessary , cause I want to show loading and error states ( hee )
                 currencyViewModel.getSupportedCurrencies()
@@ -116,6 +123,9 @@ fun NavGraphBuilder.homeScreen(
             onSelectedPopularCurrency = {
                 currencyViewModel.updateIsCallRealTimeRates(false)
                 selectedPopularCurrency = it
+            },
+            onQueryChange = {
+                currencyViewModel.updateAmount(it)
             },
             onSelectCurrencyFrom = {
                 currencyViewModel.updateCurrencyFrom(it)
@@ -129,7 +139,7 @@ fun NavGraphBuilder.homeScreen(
                         currencyArg = CurrencyConvertArg(
                             fromCurrency = currentFromState.value,
                             toCurrency = currentToState.value,
-                            amount = ""
+                            amount = amountState.value
                         )
                     )
                 )
@@ -156,6 +166,8 @@ fun HomeScreen(
     onSelectCurrencyFrom: (String) -> Unit = {},
     onSelectCurrencyTo: (String) -> Unit = {},
     onNavigate: () -> Unit = {},
+    currentSelectedChipIndex: Int,
+    onSelectedChipIndex: (Int) -> Unit,
 ) {
     val currencyFromBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -165,18 +177,12 @@ fun HomeScreen(
         skipPartiallyExpanded = true
     )
 
-    val textFieldsState = rememberTextFieldState()
-
     var currencyFromExpanded by rememberSaveable {
         mutableStateOf(false)
     }
 
     var currencyToExpanded by rememberSaveable {
         mutableStateOf(false)
-    }
-
-    var currentSelectedChipIndex by rememberSaveable {
-        mutableIntStateOf(0)
     }
 
     SearchFilterBottomSheet(
@@ -218,14 +224,6 @@ fun HomeScreen(
     ) {
         item {
             Spacer(modifier = Modifier.height(dimens.largePadding10))
-
-//            SearchBasicTextField(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(horizontal = dimens.mediumPadding3),
-//                textFieldState = textFieldsState,
-//                hint = stringResource(R.string.lbl_enter_currency)
-//            )
 
             EditableCustomOutlinedTextField(
                 query = amount,
@@ -349,7 +347,7 @@ fun HomeScreen(
                             )
                         },
                         onClick = {
-                            currentSelectedChipIndex = index
+                            onSelectedChipIndex(index)
                             onSelectedPopularCurrency(currency)
                         }
                     )
@@ -365,21 +363,25 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(dimens.smallPadding4))
 
             if (realTimeRatesState.isLoading) {
-                Spacer(modifier = Modifier.height(dimens.largePadding5))
 
-                CircularProgressIndicator(
-                    color = colorScheme.colorPrimary,
-                    strokeWidth = dimens.smallPadding1
+                CurrencyCardShimmerEffect(
+                    dimens = dimens,
+                    modifier = Modifier.padding(horizontal = dimens.mediumPadding3).fillMaxWidth()
                 )
             } else if (realTimeRatesState.isError) {
 
                 Spacer(modifier = Modifier.height(dimens.largePadding5))
 
-                Image(
-                    painter = painterResource(R.drawable.img_empty_state),
-                    contentDescription = null,
-                    modifier = Modifier.size(dimens.productCardWidth)
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.img_empty_state),
+                        contentDescription = null,
+                        modifier = Modifier.size(dimens.productCardWidth)
+                    )
+                }
             }
         }
 
@@ -395,7 +397,8 @@ fun HomeScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun HomeScreenPreview() {
     CurrencyAppTheme {
@@ -406,7 +409,11 @@ private fun HomeScreenPreview() {
             typography = MaterialTheme.currencyTypography,
             realTimeRatesState = ViewModelUiState(),
             supportedCurrenciesState = ViewModelUiState(),
-            amount = ""
+            amount = "",
+            currentSelectedChipIndex = 0,
+            onSelectedChipIndex = {
+
+            }
         )
     }
 }

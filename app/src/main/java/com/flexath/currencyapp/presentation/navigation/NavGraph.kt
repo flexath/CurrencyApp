@@ -20,24 +20,22 @@ import com.flexath.currencyapp.ui.theme.currencyTypography
 @Composable
 fun SetUpNavGraph(
     modifier: Modifier = Modifier,
+    currencyViewModel: CurrencyViewModel,
     navController: NavHostController
 ) {
     val dimens = MaterialTheme.currencyDimens
     val colorScheme = MaterialTheme.currencyColorScheme
     val typography = MaterialTheme.currencyTypography
 
-    val currencyViewModel = hiltViewModel<CurrencyViewModel>()
-
     Scaffold(
         modifier = modifier,
         containerColor = colorScheme.colorBackground,
-        contentWindowInsets = WindowInsets.safeDrawing,
     ) {
         val bottomPadding = it.calculateBottomPadding()
         val topPadding = it.calculateTopPadding()
 
         NavHost(
-            modifier = Modifier,
+            modifier = Modifier.fillMaxSize(),
             navController = navController,
             startDestination = Screen.Home
         ) {
@@ -56,9 +54,7 @@ fun SetUpNavGraph(
                 colorScheme = colorScheme,
                 typography = typography,
                 currencyViewModel = currencyViewModel,
-                onNavigate = {
-                    navController.navigateUp()
-                }
+                navController = navController
             )
         }
     }

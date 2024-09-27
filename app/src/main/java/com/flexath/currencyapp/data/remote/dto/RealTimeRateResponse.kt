@@ -38,6 +38,6 @@ data class RealTimeRateResponse(
 // Extension function to convert Map<String, Double> to List<CurrencyEntity>
 fun Map<String, Double>.toCurrencyVOList(): List<CurrencyVO> {
     return this.map { (key, value) ->
-        CurrencyVO(currencyCode = key, value = value)
+        CurrencyVO(currencyCode = key, value = value,"")
     }
 }
