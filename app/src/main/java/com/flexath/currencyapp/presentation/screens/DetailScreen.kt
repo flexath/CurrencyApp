@@ -135,7 +135,7 @@ fun DetailScreen(
                         Icon(
                             imageVector = Icons.Default.ArrowBackIosNew,
                             contentDescription = null,
-                            tint = colorScheme.colorIcon
+                            tint = colorScheme.colorTitleText
                         )
                     }
                 }
