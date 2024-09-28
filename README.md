@@ -1,9 +1,9 @@
 # CurrencyApp
 It is case study.
 
-### Currency App is an Android application built using Jetpack Compose, which supports both ### light and dark mode. 
+### Currency App is an Android application built using Jetpack Compose, which supports both light and dark mode. 
 
-####Components Used
+#### Components Used
 ### 1. Clean Architecture
 The app follows Clean Architecture, which separates concerns into different layers for better maintainability, scalability, and testability.
 ##### Layers:
@@ -23,8 +23,8 @@ Room is used as the local database to store and cache currency data. This allows
 
 ## Important : Be aware of API_KEY
 The API key is stored securely in the local.properties file to keep it out of version control. Make sure to add your API key there before running the app:
-1 - Open the local.properties file.
-2 - Add the following line with your API key:
+###### 1 - Open the local.properties file.
+###### 2 - Add the following line with your API key:
     API_KEY=your_api_key_here
   
 ##### Note: This file is not included in the repository, so you'll need to create it or add your key to the existing file.
