@@ -1,7 +1,7 @@
 # CurrencyApp
 It is case study.
 
-### Currency App is an Android application built using Jetpack Compose, which supports both light and dark mode. 
+### Currency App is an Android application built using Jetpack Compose, which supports both light and dark modes. 
 
 #### Components Used
 ### 1. Clean Architecture
@@ -19,6 +19,9 @@ The app utilizes Retrofit to make API requests to fetch live currency data from 
 
 ### 4. Room Database for Local Storage
 Room is used as the local database to store and cache currency data. This allows the app to function offline and improve the user experience with cached data when there's no internet connection.
+
+### 5. Kotlin Coroutine Flows for Reactive Data Handling
+Kotlin Coroutine Flows are used to manage reactive data streams, ensuring that the UI is updated in real-time when data changes.
 
 
 ## Important : Be aware of API_KEY
