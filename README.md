@@ -1,6 +1,8 @@
 # CurrencyApp
 It is case study.
 
+App Release Version Download Link: https://drive.google.com/file/d/1B3Mayc-N10WkVxF5n0Vs8WvMk8fYZBwH/view?usp=sharing
+
 ### Currency App is an Android application built using Jetpack Compose, which supports both light and dark modes. 
 
 #### Components Used
