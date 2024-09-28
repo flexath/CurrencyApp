@@ -2,4 +2,5 @@
     <string name="app_name">CurrencyApp</string>
     <string name="lbl_enter_currency">Enter currency</string>
     <string name="lbl_convert">Convert</string>
+    <string name="lbl_there_is_no_data">There is no data</string>
 </resources>

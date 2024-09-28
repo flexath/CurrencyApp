@@ -5,9 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +14,6 @@ import androidx.navigation.compose.rememberNavController
 import com.flexath.currencyapp.presentation.navigation.SetUpNavGraph
 import com.flexath.currencyapp.presentation.viewmodels.CurrencyViewModel
 import com.flexath.currencyapp.ui.theme.CurrencyAppTheme
-import com.flexath.currencyapp.ui.theme.currencyColorScheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,16 +26,11 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val currencyViewModel = hiltViewModel<CurrencyViewModel>()
 
-                Scaffold(
+                SetUpNavGraph(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = MaterialTheme.currencyColorScheme.colorBackground
-                ) { innerPadding ->
-                    SetUpNavGraph(
-                        modifier = Modifier.padding(innerPadding),
-                        currencyViewModel = currencyViewModel,
-                        navController = navController
-                    )
-                }
+                    currencyViewModel = currencyViewModel,
+                    navController = navController
+                )
             }
         }
     }

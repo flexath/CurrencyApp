@@ -1,13 +1,11 @@
 package com.flexath.currencyapp.presentation.navigation
 
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.flexath.currencyapp.presentation.screens.detailScreen
@@ -40,7 +38,7 @@ fun SetUpNavGraph(
             startDestination = Screen.Home
         ) {
             homeScreen(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().statusBarsPadding(),
                 dimens = dimens,
                 colorScheme = colorScheme,
                 typography = typography,
